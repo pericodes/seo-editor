@@ -1,0 +1,992 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- metaTags -->
+	<meta charset="utf-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container card">
+    </script>
+    <section id="comonData">
+    <section class="form-group">
+        <label for="title">Title</label>
+        <input required="" type="text" class="form-control" id="title"  name="title"  onkeyup="generateLink(this)">
+        <div class="invalid-feedback">Example invalid feedback text</div>
+    </section>
+    <section class="form-group">
+        <label for="metaTitle">Meta title (<span style="font-size: 8pt;">pixels:<span id="title-length">0</span>, characters:<span id="title-string-length">0</span></span>)</label>
+        <input required="" type="text" class="form-control" id="metaTitle"  name="metaTitle" maxlength="65" >
+        <div class="invalid-feedback" id="metaTitle-error">El metatítulo debe tener como mínimo 30 caracteres y como máximo 65</div>
+    </section>
+    <div class="progress mb-2">
+        <div class="progress-bar" role="progressbar" id="progressMetaTitle" aria-valuenow="0" aria-valuemin="0" aria-valuemax="65"></div>
+    </div>
+    <section class="form-group">
+        <label for="url">Url</label>
+        <input required="" type="url" class="form-control" id="url"  name="url">
+        <div class="invalid-feedback" id="metaTitle-error">El link debe empezar por http o https.</div>
+    </section>
+    <section class="form-group mb-1">
+        <label for="metaDescription">Meta description (<span style="font-size: 8pt;">pixels:<span id="desc-length">0</span>, characters:<span id="desc-string-length">0</span></span>)</label>
+        <textarea required="" class="form-control" id="metaDescription" rows="2" maxlength="210"></textarea>
+        <div class="invalid-feedback" id="metaTitle-error">La metadescripción debe tener como mínimo 100 caracteres y como máximo 210</div>
+    </section>
+    <div class="progress mb-2">
+        <div class="progress-bar" role="progressbar" id="progressMetaDescription" aria-valuenow="0" aria-valuemin="0" aria-valuemax="210"></div>
+    </div>
+</section>
+<script>
+    function generateLink(title) {
+        let regex = /[^\w]/gm;
+        let link = title.value.toLowerCase();
+        link = link.trim();
+        link = link.replace(/à/gm, 'a'); 
+        link = link.replace(/á/gm, 'a'); 
+        link = link.replace(/â/gm, 'a'); 
+        link = link.replace(/ã/gm, 'a'); 
+        link = link.replace(/ä/gm, 'a'); 
+        link = link.replace(/å/gm, 'a'); 
+        link = link.replace(/æ/gm, 'a'); 
+        link = link.replace(/ç/gm, 'c'); 
+        link = link.replace(/è/gm, 'e'); 
+        link = link.replace(/é/gm, 'e'); 
+        link = link.replace(/ê/gm, 'e'); 
+        link = link.replace(/ë/gm, 'e'); 
+        link = link.replace(/ì/gm, 'i'); 
+        link = link.replace(/í/gm, 'i'); 
+        link = link.replace(/î/gm, 'i'); 
+        link = link.replace(/ï/gm, 'i'); 
+        link = link.replace(/ð/gm, 'o'); 
+        link = link.replace(/ñ/gm, 'n'); 
+        link = link.replace(/ń/gm, 'n'); 
+        link = link.replace(/ò/gm, 'o'); 
+        link = link.replace(/ó/gm, 'o'); 
+        link = link.replace(/ô/gm, 'o'); 
+        link = link.replace(/õ/gm, 'o'); 
+        link = link.replace(/ö/gm, 'o'); 
+        link = link.replace(/ø/gm, 'o'); 
+        link = link.replace(/ù/gm, 'u'); 
+        link = link.replace(/ú/gm, 'u'); 
+        link = link.replace(/û/gm, 'u'); 
+        link = link.replace(/ü/gm, 'u');
+        link = link.replace(regex, "-").replace(/\-+/gm, "-"); 
+        /*while (regex.test(title)) {
+            link = link.replace(regex, "-");
+        }*/
+
+        //let domain = `${window.location.href.split("/")[2]}/${encodeURI(link)}`;
+        //_myDomain = _myDomain ? _myDomain : "yourdomain.com";
+        let domain = `yourdomain.com/${encodeURI(link)}`;
+        if (typeof generateUrlSnippet === "function") { 
+            generateUrlSnippet(domain);
+        }
+        let linkElement = document.getElementById("url");
+        if (linkElement) {
+        linkElement.value = `https://${domain}`;
+        }
+        if(title.value.length <= document.getElementById("metaTitle").getAttribute("maxlength")){
+            document.getElementById("metaTitle").value = title.value;
+        }else{
+            document.getElementById("metaTitle").value = title.value.substring(0, document.getElementById("metaTitle").getAttribute("maxlength"));
+        }
+        progresionBarTitle();
+
+    }
+
+    function progresionBarTitle() {
+        let charactesrs = document.getElementById("metaTitle").value.length; 
+        document.getElementById("progressMetaTitle").setAttribute("aria-valuenow", charactesrs);
+        document.getElementById("progressMetaTitle").style.width = `${charactesrs/document.getElementById("metaTitle").getAttribute("maxlength")*100}%`;
+        document.getElementById("progressMetaTitle").innerHTML = `${charactesrs}/${document.getElementById("metaTitle").getAttribute("maxlength")}`;
+        if (typeof generateTitleData === "function") { 
+            generateTitleData(document.getElementById("metaTitle").value);
+        }
+    }
+
+    document.getElementById("metaTitle").addEventListener('keyup', (e)=>{
+        progresionBarTitle();
+    });
+    document.getElementById("metaDescription").addEventListener('keyup', ()=>{
+        let charactesrs = document.getElementById("metaDescription").value.length; 
+        document.getElementById("progressMetaDescription").setAttribute("aria-valuenow", charactesrs);
+        document.getElementById("progressMetaDescription").style.width = `${charactesrs/document.getElementById("metaDescription").getAttribute("maxlength")*100}%`;
+        document.getElementById("progressMetaDescription").innerHTML = `${charactesrs}/${document.getElementById("metaDescription").getAttribute("maxlength")}`;
+        if (typeof generateDescData === "function") { 
+            generateDescData(document.getElementById("metaDescription").value);
+        }
+    });
+</script>
+<section id="googlePreview" class="card">
+    <div class="card-body">
+        <label>Google Preview:</label>
+        <div id="google-nahled" style="background-color:#fff;">                       
+            <div style="display:block;" id="google-title" class="google-title">El título en Google tiene un límite de 580px en ordenadores.</div>   
+            <div class="n9USt nCkwMd" id="google-valoration" style="display: none;">
+                <div class="MUxGbd lyLwlc aLF0Z">Valoración</div><div style="margin-top:4px"></div>
+                <div class="qB1bVd MUxGbd wuQ4Ob WZ8Tjf aLF0Z"><span class="tP9Zud">
+                    <span id="ratingValue" aria-hidden="true">0</span> 
+                    <div class="Hk2yDb KsR1A" aria-label="Valoración de 0 de un máximo de 5" role="img">
+                        <span id="ratingStar" style="width:0px"></span></div>
+                        <span id="ratingCount">(0)</span> 
+                    </span>
+                </div>
+            </div>             
+            <cite style="display:block;" id="google-url" class="google-url">www.domain.com/page    
+            </cite>   
+            <div id="google-desc" class="google-desc">La meta descripción se corta a los ~920 pixels en ordenadores y a los  ~750px en móviles. Bing y Yahoo la cortan a los ~980px.</div>
+        </div>
+        <section id="googlePreviewInfo">
+            <div>
+                <span id="title-status"></span>
+            </div>
+            <div>
+                <span id="desc-status"></span>
+            </div>
+        </section>
+    </div>
+    <canvas id="canvas" width="0" height="0" style="border:1px solid #d3d3d3;">   Note: The canvas tag is not supported in Internet Explorer 8 and earlier versions.</canvas>
+</section>
+
+
+
+<script>
+function generateDescData(descText) {		
+	  document.getElementById("google-desc").innerHTML = getDescSnippet(descText);
+	  document.getElementById("desc-status").innerHTML = getMetaDescStatus(descText);
+	  document.getElementById("desc-length").innerHTML = getMetaDescWidth(descText);
+    document.getElementById("desc-string-length").innerHTML = descText.length; 
+}
+	
+	
+function generateTitleData(titleText) {
+	document.getElementById("google-title").innerHTML = getTitleSnippet(titleText);
+	document.getElementById("title-status").innerHTML = getTitleStatus(titleText);
+	document.getElementById("title-length").innerHTML = getTitleWidth(titleText);
+  document.getElementById("title-string-length").innerHTML = titleText.length;
+}
+
+function generateUrlSnippet(urlText) {		
+	  document.getElementById("google-url").innerHTML = getUrlSnippet(urlText);
+}
+																
+function getMetaDescStatus(txt) {      
+    //var txt = document.getElementById("desc").value; 
+    var metaDescWidth = getMetaDescWidth(txt);
+    
+    var statusText = "";
+    var statusMobile = "";
+    var statusDesktop = "";
+    if (metaDescWidth <= 680){
+       statusText = '<span style="font-weight:bold;color:#016717">The meta description can be read everywhere, nice job!';
+      statusMobile = '<span style="color:#016717">OK';
+      statusDesktop = '<span style="color:#016717">OK';
+    }
+    else if (metaDescWidth > 680 && metaDescWidth < 720 ){
+      statusText =  '<span style="font-weight:bold;color:#016717">The meta description will not be fully shown on some mobiles.';
+      statusMobile = '<span style="color:#e28801">The majority is OK, smaller devices are NOT';
+      statusDesktop = '<span style="color:#016717">OK';
+    }                                                        
+    /*else if (metaDescWidth >= 840 && metaDescWidth < 980 ){
+      statusText =  '<span style="font-weight:bold;color:#e28801">The meta description will not be fully shown on mobiles.';
+      statusMobile = '<span style="color:#bd0000">Not displayed the whole meta description';
+      statusDesktop = '<span style="color:#016717">OK';
+    }*/
+    else if (metaDescWidth >= 720 && metaDescWidth < 920 ){
+      statusText =  '<span style="font-weight:bold;color:#e28801">The meta description will be fully shown on desktop on Google, Bing, Yahoo.';
+      statusMobile = '<span style="color:#bd0000">Not displayed the whole meta description';
+      statusDesktop = '<span style="color:#e28801">Displayed only on Google, not displayed Bing, Yahoo.';
+    }
+    else if (metaDescWidth >= 920){
+      statusText =  '<span style="font-weight:bold;color:#bd0000">The meta description is probably too long. Make it shorter.';
+      statusMobile = '<span style="color:#bd0000">Not displayed the whole meta description';
+      statusDesktop = '<span style="color:#bd0000">The meta description is realy looong';
+    }
+    else {
+      statusText = "Unknown status";
+    }
+        
+    //document.getElementById("desc-length").innerHTML = metaDescWidth;
+    //document.getElementById("desc-string-length").innerHTML = txt.length; 
+    return statusText;
+    //document.getElementById("desc-status-mobile").innerHTML = statusMobile;
+    //document.getElementById("desc-status-desktop").innerHTML = statusDesktop;
+    
+    //document.getElementById("google-desc").innerHTML = getDescSnippet(txt);      
+}
+function getMetaDescWidth(inputText) {
+    var c = document.getElementById("canvas");
+    var ctx = c.getContext("2d");    
+    
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.font = "13px Arial";    
+    return Math.round(ctx.measureText(inputText).width);
+}
+	
+function getDescSnippet(inputText) {
+    var maxPixels = 1750;
+    var metaDescWidth = getMetaDescWidth(inputText);
+    
+      var inputAsArray = inputText.split(" ");
+      
+      var develInput = ""; // vytvaram postupne zo slov novy popisok a testujem, kedy prekrocim hranicu na max pocet px
+      var outputHtml = ""; // fin&aacute;lne htmlko, ktore pojde na vystup. Bude obsahova&#357; aj <span> tagy
+      var zlta = false; // ci je uz aktivne zlte pozadie
+      var oranzova = false;
+      
+      var zltaEnd = false; // ci uz je farba aj uzatvorena
+      var oranzovaEnd = false;
+      for (i = 0; i < inputAsArray.length; i++) { // prechadzam slovo po slove          
+        develInput += inputAsArray[i];
+            
+           
+        var newWidth = getMetaDescWidth(develInput); // zistim dlzku
+        
+        if (newWidth < 680){ // pohoda dlzka, len pridam text na vystup 
+            outputHtml += inputAsArray[i];
+        }
+        else if (newWidth >= 680 && newWidth < 920){ // ak presiahne 1. metu, dam zlte pozadie
+          if (!zlta){
+             zlta = true;
+             outputHtml+= '<span title="Truncated on mobile devices" style="background-color:#ffff8c;">';
+          }                                                   
+          outputHtml+= inputAsArray[i];
+        }
+        else if (newWidth >= 920 && newWidth <= maxPixels){ // ak presiahne 2. metu, dam oranzove pozadie
+          if (!oranzova){
+             oranzova = true;
+             outputHtml+= '<span title="Truncated on Bing &#038; Yahoo!"  style="background-color:#ffd55d;;">';
+          }            
+          outputHtml+= inputAsArray[i];
+        }          
+        else if (newWidth > maxPixels){ // vytvoreny string je uz vacsi nez max -> 3. meta
+           outputHtml += inputAsArray[i];                                                                
+           var n = outputHtml.lastIndexOf(" ");           
+           outputHtml = outputHtml.substr(0,n); // useknem posledne slovo, ktor&eacute; "pretek&aacute;" von
+           
+           if (zltaEnd == false){ // ukoncim zvyraznenia
+              outputHtml += '';
+              zltaEnd = true;
+           }
+           if (oranzovaEnd == false){
+              outputHtml += '';
+              oranzovaEnd = true;
+           }
+           
+           return outputHtml + " ..."; // do v&yacute;stupu este pridam tri bodky
+            
+        }
+              
+        if (i != inputAsArray.length - 1){ // kym sa nejedna o posledne slovo, pridavam medzi ne medzeru
+          develInput += " ";
+          outputHtml += " ";
+        } 
+    }                      
+    if (zltaEnd == false){ // ak som nepresvihol max. dlzku, ale nejake podfarbenie je aktivne
+        outputHtml += '';
+        zltaEnd = true;
+    }
+    if (oranzovaEnd == false){
+        outputHtml += '';
+        oranzovaEnd = true;
+    }      
+    return outputHtml;
+}
+function getTitleWidth(inputText) {
+	var c = document.getElementById("canvas");
+	var ctx = c.getContext("2d");    
+	ctx.clearRect(0, 0, c.width, c.height);
+	ctx.font = "20px Arial";    
+	return Math.round(ctx.measureText(inputText).width);
+}
+	
+function getTitleStatus(txt) {          
+    var width = getTitleWidth(txt);
+    
+    var statusText = "";
+    if (width < 580){
+      statusText = '<span style="font-weight:bold;color:#016717">The title can be read everywhere, nice job!';
+    }
+    /*else if (width > 512 && width < 580 ){
+      statusText =  '<span style="font-weight:bold;color:#e28801">The title will not be fully shown on some mobiles.';      
+    }*/                                                        
+    else if (width >= 580){
+			statusText =  '<span style="font-weight:bold;color:#bd0000">The title is too long. Make it shorter.';
+    }
+    else {
+      statusText = "Unknown status";
+    }
+        
+    return statusText;         
+}
+	
+function getTitleSnippet(inputText) {
+    var maxPixels = 580;
+    var width = getTitleWidth(inputText);
+    
+      var inputAsArray = inputText.split(" ");
+      
+      var develInput = ""; // vytvaram postupne zo slov novy title a testujem, kedy prekrocim hranicu na max pocet px
+      var outputHtml = ""; // fin&aacute;lne htmlko, ktore pojde na vystup. Bude obsahova&#357; aj <span> tagy
+      var zlta = false; // ci je uz aktivne zlte pozadie
+      var zltaEnd = false; // ci uz je farba aj uzatvorena
+      
+	
+      for (i = 0; i < inputAsArray.length; i++) { // prechadzam slovo po slove          
+        develInput += inputAsArray[i];
+            
+           
+        var newWidth = getTitleWidth(develInput); // zistim dlzku
+        
+        if (newWidth < 580){ // pohoda dlzka, len pridam text na vystup 
+            outputHtml += inputAsArray[i];
+        }
+        /*else if (newWidth >= 512 && newWidth < 580){ // ak presiahne 1. metu, dam zlte pozadie
+          if (!zlta){
+             zlta = true;
+             outputHtml+= '<span title="Truncated on mobile devices" style="background-color:#ffff8c;">';
+          }                                                   
+          outputHtml+= inputAsArray[i];
+        }      */        
+        else if (newWidth >= 580){ // vytvoreny string je uz vacsi nez max -> ideme sekat a pridavat bodky " ..." na koniec
+					 var triBodkyWidth = getTitleWidth(" ...");
+					 var totalWidth = newWidth + triBodkyWidth; // zvysime dlzku o " ...", ktore pridame do snippetu
+					 var wordsToCutCount = 0; // kolko slov sa ma useknut
+					 while (totalWidth >= 580){
+						 var develInputAsArray = develInput.split(" ");
+						 var li = develInput.lastIndexOf(" ");
+						 develInput = develInput.substr(0,li); // odoberiem posledne slovo
+						 
+						 wordsToCutCount++;
+						 totalWidth = getTitleWidth(develInput) + triBodkyWidth;
+					 }
+					 
+					 outputHtml += inputAsArray[i];                                                                
+					 for (j = 0; j < wordsToCutCount; j++){
+						 var n = outputHtml.lastIndexOf(" ");           
+             outputHtml = outputHtml.substr(0,n); // useknem posledne slovo, ktor&eacute; "pretek&aacute;" von
+					 }
+           
+           if (zltaEnd == false){ // ukoncim zvyraznenia
+              outputHtml += '';
+              zltaEnd = true;
+           }
+                      
+           return outputHtml + " ..."; // do v&yacute;stupu este pridam tri bodky            						
+        }
+              
+        if (i != inputAsArray.length - 1){ // kym sa nejedna o posledne slovo, pridavam medzi ne medzeru
+          develInput += " ";
+          outputHtml += " ";
+        } 
+    }                      
+    if (zltaEnd == false){ // ak som nepresvihol max. dlzku, ale nejake podfarbenie je aktivne
+        outputHtml += '';
+        zltaEnd = true;
+    }      
+    return outputHtml;
+}
+	
+function getUrlWidth(inputText) {
+	var c = document.getElementById("canvas");
+	var ctx = c.getContext("2d");    
+	ctx.clearRect(0, 0, c.width, c.height);
+	ctx.font = "14px Arial";    
+	return Math.round(ctx.measureText(inputText).width);
+}
+	
+function getUrlSnippet(inputText) {
+   if (getUrlWidth(inputText) < 580){
+		 return inputText;
+	 }
+	 else {
+		 var triBodkyWidth = getUrlWidth("...");
+		 while ((getUrlWidth(inputText) + triBodkyWidth) >= 580){
+			 inputText = inputText.substring(0, inputText.length - 1);
+		 }
+	 	 
+	 	 return inputText + "...";
+	 }
+}
+</script>
+<style type="text/css">
+    .MUxGbd {
+        padding-top: 1px;
+        margin-bottom: -1px;
+        font-family: Roboto,HelveticaNeue,Arial,sans-serif;
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .nCkwMd {
+        box-sizing: border-box;
+        padding-right: 8px;
+    }
+    .n9USt {
+        flex: 1;
+        max-width: 50%;
+    }
+    #google-description {
+        max-height: 999999px;
+        display: block;
+    }
+    .uUPGi {
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .Hk2yDb, .Hk2yDb span {
+        width: 65px;
+        height: 15px;
+        display: inline-block;
+        background: repeat-x 0 0;
+        background-size: 13px 15px;
+        font-size: 0;
+        line-height: 0;
+    }
+    .aLF0Z {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    .Hk2yDb.KsR1A {
+        background-image: url("data:image/svg+xml,\00003csvg width='13px' height='15px' xmlns='http://www.w3.org/2000/svg'>\00003cpath fill='%23d1d1d1' d='m0,7.6l4.7,0,1.5-4.5,1.5,4.5,4.7,0-3.8,2.8,1.5,4.5-3.8-2.8-3.8,2.8,1.5-4.5'/>\00003c/svg>");
+    }
+    .Hk2yDb.KsR1A span {
+        background-image: url("data:image/svg+xml,\00003csvg width='13px' height='15px' xmlns='http://www.w3.org/2000/svg'>\00003cpath fill='%23fabb05' d='m0,7.6l4.7,0,1.5-4.5,1.5,4.5,4.7,0-3.8,2.8,1.5,4.5-3.8-2.8-3.8,2.8,1.5-4.5'/>\00003c/svg>");
+    }
+    .WZ8Tjf {
+        color: #70757A;
+    }
+    
+    
+    
+    /* Google snippet nahlady */
+    .google-title{
+      color: #12C;   font-family: arial, sans-serif;   font-size: 20px;  font-weight: 400;   height: auto;  line-height: 19px;
+      list-style-image: none;   list-style-position: outside;    list-style-type: none;    margin-bottom: 0px;   margin-left: 0px;
+      margin-right: 0px;  margin-top:0px;  padding:0px;   text-align: left;  text-decoration: none;  visibility: visible;
+      width: auto;
+    }
+    
+    .google-url{
+      color: #093;  display: block;   font-family: arial, sans-serif;    font-size: 14px;  font-style: normal;
+      font-weight: normal;   height: auto;  line-height: 16px;   list-style-image: none;   list-style-position: outside;
+      list-style-type: none;    margin:0px;   padding:0px;  text-align: left;   visibility: visible;   max-width: 600px;
+    }
+    
+    .google-url a {
+      color: #12C; display: inline; font-family: arial, sans-serif; font-size: 14px; font-style: normal; font-weight: normal; height: auto; line-height: 15px; list-style-image: none; list-style-position: outside;
+      list-style-type: none; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; margin-top: 0px; min-height: 0px; padding-bottom: 0px; padding-left: 0px; padding-right: 0px;
+      padding-top: 0px; text-align: left; text-decoration: none; width: auto; 
+    }
+     
+    .google-grey{
+      color: #666;  display: block;   font-family: arial, sans-serif;  font-size: 13px;  font-weight: normal;   height: 15px;
+      line-height: 15px;  list-style-image: none;   list-style-position: outside;  list-style-type: none;   margin-bottom: 1px;
+      margin-left: 0px;   margin-right: 0px;  margin-top: 0px;    overflow-y: visible;     padding-bottom: 0px;   padding-left: 0px;
+      padding-right: 0px;        text-align: left;  visibility: visible;     max-width: 512px;  
+      padding-top: 0px;
+    }
+    
+    
+    .google-desc{
+      color: #222;  font-family: arial, sans-serif;   font-size: 13px;  font-weight: normal;  height: auto;   line-height: 18.2px;
+      list-style-image: none;  list-style-position: outside;   list-style-type: none;   margin-bottom: 0px;  margin-left: 0px;
+      margin-right: 0px;   margin-top: 0px;   padding-bottom: 0px;  padding-left: 0px;  padding-right: 0px;   padding-top: 0px;
+      text-align: left;  visibility: visible;   max-width: 600px;
+    }
+    
+    
+    #google-nahled{
+      border: 1px solid #dddddd; 
+      max-width:600px;
+      padding: 15px;
+      margin: 0 0 10px 0;
+    }
+</style>    <div class="form-group">
+    <label for="editor">Description</label>
+    <div required="" class="form-control" id="editor" rows="3"></div>
+</div>
+
+<div class="modal" id="changeAttributesImageModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+	  <div class="modal-content">
+		<div class="modal-header">
+		  <h5 class="modal-title">Debes añadir un alt a todas las imágenes</h5>
+		  <button type="button" class="close" data-dismiss="changeAttributesImageModal" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		<div class="modal-body">
+		  <!--<p>Es importante añadir un alt a todas las imágenes para tener mejores resultados en los buscadores.</p>-->
+		  <div class="form-group">
+			<label for="altImg">Introduce el alt que quierres que tenga la foto.</label>
+			<input type="text" class="form-control" id="altImg" placeholder="Ej: Intruduce un texto alternativo en caso de que la foto no se pueda ver">
+          </div>
+          <div class="form-group">
+			<label for="titleImg">Introduce el título que quierres que tenga la foto.</label>
+			<input type="text" class="form-control" id="titleImg" placeholder="Ej: Intruduce el título de la imagen.">
+          </div>
+          <div class="form-group">
+			<label for="captionImg">Introduce el caption que quierres que tenga la foto.</label>
+			<input type="text" class="form-control" id="captionImg" placeholder="Ej: Intruduce el caption de la imagen. ">
+		  </div>
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-primary" data-dismiss="changeAttributesImageModal" onclick="changeAttributesToImage()">Guardar</button>
+		</div>
+	  </div>
+	</div>
+  </div>
+
+<script>
+var imageToChange;
+  function changeAttributesToImage() {
+    imageToChange.setAttribute("alt", document.getElementById("altImg").value);
+    imageToChange.setAttribute("title", document.getElementById("titleImg").value);
+    let figcaption = imageToChange.closest("figure").getElementsByTagName("figcaption");
+    if(figcaption){
+        imageToChange.closest("figure").getElementsByTagName("figcaption")[0].innerHTML = document.getElementById("captionImg").value;
+    }else{
+        imageToChange.closest("figure").insertAdjacentHTML("beforeend", `<figcaption>${document.getElementById("captionImg").value}</figcaption>`)
+    }
+    normalizeImages();
+  }
+
+  function normalizeImages() {
+      console.log("function normalizeImages");
+    let images = descriptionEditor.body.getElementsByTagName("img");
+    let resultCorrect = true;
+    for (const image of images) {
+      resultCorrect =   resultCorrect && 
+                        image.hasAttribute("alt")   && image.getAttribute("alt").length > 0 &&
+                        image.hasAttribute("title") && image.getAttribute("title").length > 0 &&
+                        image.closest("figure").getElementsByTagName("figcaption") &&
+                        image.closest("figure").getElementsByTagName("figcaption")[0].innerHTML != "" &&
+                        image.closest("figure").getElementsByTagName("figcaption")[0].innerHTML != "Escribe una leyenda.";
+
+      if (!resultCorrect) {
+        image.scrollIntoView(true);
+        image.click();
+        document.getElementById("altImg").value = image.hasAttribute("alt") ? image.getAttribute("alt") : "";
+        document.getElementById("titleImg").value = image.hasAttribute("titleImg") ? image.getAttribute("titleImg") : "";
+        document.getElementById("captionImg").value = image.closest("figure").getElementsByTagName("figcaption")[0].innerHTML;
+        imageToChange = image;
+        $('#changeAttributesImageModal').modal('show');
+        break;
+      }
+    }if(resultCorrect)
+        $('#changeAttributesImageModal').modal('hide');
+    return resultCorrect;
+  }
+</script><script>
+function generateMenuNavigation() {
+    let toc_container = descriptionEditor.querySelector("#toc_container");
+
+    
+    if(toc_container){
+        toc_container.parentNode.removeChild(toc_container);
+    }
+
+    let headings = descriptionEditor.querySelectorAll("h2, h3, h4, h5, h6");
+    if(headings.length > 0){
+        let levels = [0, 0, 0, 0, 0];
+        let level = 0; 
+        let ul = `<ul >`;
+        let html = `<nav id="toc_container" class="no_bullets"><p class="toc_title">Índice de la review <span class="toc_toggle">[<a href="#">Mostrar</a>]</span></p><ul class="toc_list">`;
+
+        for (let heading of headings) {
+            let newLevel;
+            switch (heading.tagName) {
+                case "H2":
+                    newLevel = 0;
+                    break;
+                case "H3":
+                    newLevel = 1;
+                        break;
+                case "H4":
+                    newLevel = 2;
+                        break;
+                case "H5":
+                    newLevel = 3;
+                        break;
+                case "H6":
+                    newLevel = 4;
+                        break;
+                
+                default:
+                    break;
+            }
+            for (let index = newLevel+1; index < levels.length; index++) {
+                levels[index] = 0;
+            }
+            ++levels[newLevel];
+            let content = "";
+            for (let index = 0; index < levels.length && index < newLevel+1; index++) {
+                content += levels[index] + ".";
+            }
+            let id = heading.textContent.replace(/[^\w]/gi, "-");
+            heading.id = id; 
+            
+            let li = `<li ><a href="#${id}"><span class="toc_number toc_depth_${newLevel+1}">${content}</span> ${heading.textContent}</a></li>`;
+
+            if(newLevel == level){
+                html += li;
+            }else if(newLevel >= level){
+                html += `${ul}${li}`;
+            }else{
+                html += `</ul>${li}`;
+            }
+            level = newLevel;
+            
+        }
+        html += `</ul></nav>`;
+        //console.log(html);
+        headings[0].insertAdjacentHTML("beforebegin", html);
+    }
+
+}
+
+var style = `
+<style>
+#toc_container ul,#toc_container li {
+    margin:0;
+    padding:0;
+}
+
+#toc_container.no_bullets ul,
+#toc_container.no_bullets li,
+#toc_container.no_bullets ul li,
+.toc_widget_list.no_bullets,
+.toc_widget_list.no_bullets li {
+    background:none;
+    list-style-type:none;
+    list-style:none;
+}
+
+#toc_container.have_bullets li {
+    padding-left:12px;
+}
+
+#toc_container ul ul {
+    margin-left:1.5em;
+}
+
+#toc_container {
+    background:#f9f9f9;
+    border:1px solid #aaa;
+    padding:10px;
+    margin-bottom:1em;
+    width:auto;
+    display:table;
+    font-size:95%;
+}
+
+#toc_container.toc_light_blue {
+    background:#edf6ff;
+}
+
+#toc_container.toc_white {
+    background:#fff;
+}
+
+#toc_container.toc_black {
+    background:#000;
+}
+
+#toc_container.toc_transparent {
+    background:none transparent;
+}
+
+#toc_container p.toc_title {
+    text-align:center;
+    font-weight:700;
+    margin:0;
+    padding:0;
+}
+
+#toc_container.toc_black p.toc_title {
+    color:#aaa;
+}
+
+#toc_container span.toc_toggle {
+    font-weight:400;
+    font-size:90%;
+}
+
+#toc_container p.toc_title + ul.toc_list {
+    margin-top:1em;
+}
+
+.toc_wrap_left {
+    float:left;
+    margin-right:10px;
+}
+
+.toc_wrap_right {
+    float:right;
+    margin-left:10px;
+}
+
+#toc_container a {
+    text-decoration:none;
+    text-shadow:none;
+    color: black; 
+}
+
+#toc_container a:hover {
+    text-decoration:underline;
+}
+
+.toc_sitemap_posts_letter {
+    font-size:1.5em;
+    font-style:italic;
+}
+</style>`;
+</script>
+
+
+
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+
+<script>
+    
+var newImg;
+var descriptionEditor;
+
+/* EDITOR */
+	let editorSelector = "#editor";
+			tinymce.init({
+				selector: editorSelector,  // change this value according to your HTML
+				setup: function(editor){
+
+					editor.on('NodeChange', function (e) {
+                        elementControl(e.element);
+					});
+					editor.on('init', function (e) {
+
+                        descriptionEditor = this.contentDocument;
+						descriptionEditor.head.insertAdjacentHTML("beforeend", style);
+						descriptionEditor = descriptionEditor.body; 
+                    });
+                    editor.on('init', () => {
+                        editor.getContainer().style.transition="border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out"
+                      });
+                      editor.on('focus', () => {
+                        editor.getContainer().style.boxShadow="0 0 0 .2rem rgba(0, 123, 255, .25)",
+                        editor.getContainer().style.borderColor="#80bdff"
+                      });
+                      editor.on('blur', () => {
+                        editor.getContainer().style.boxShadow="",
+                        editor.getContainer().style.borderColor=""
+                      });
+				},
+				plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons',
+				imagetools_cors_hosts: ['picsum.photos'],
+				menubar: 'file edit view insert format tools table help',
+				//toolbar: 'undo redo | bold italic underline strikethrough | fontselect fontsizeselect formatselect | alignleft aligncenter alignright alignjustify | outdent indent |  numlist bullist | forecolor backcolor removeformat | pagebreak | charmap emoticons | fullscreen  preview save print | insertfile image media template link anchor codesample | ltr rtl',
+				toolbar: ' undo redo | bold italic underline strikethrough removeformat | emoticons template pagebreak | formatselect | alignleft aligncenter alignright | outdent indent |  numlist bullist | image media  link | fullscreen  preview | forecolor backcolor ',
+				toolbar_sticky: true,
+				autosave_ask_before_unload: false,
+				autosave_interval: "30s",
+				autosave_prefix: "{path}{query}-{id}-",
+				autosave_restore_when_empty: false,
+				autosave_retention: "2m",
+				image_advtab: true,
+				content_css: [
+					'//fonts.googleapis.com/css?family=Lato:300,300i,400,400i',
+					'//www.tiny.cloud/css/codepen.min.css'
+				],
+				link_list: [
+					{ title: 'My page 1', value: 'http://www.tinymce.com' },
+					{ title: 'My page 2', value: 'http://www.moxiecode.com' }
+				],
+				image_list: [
+					{ title: 'My page 1', value: 'http://www.tinymce.com' },
+					{ title: 'My page 2', value: 'http://www.moxiecode.com' }
+				],
+				image_class_list: [
+					{ title: 'None', value: '' },
+					{ title: 'Some class', value: 'class-name' }
+				],
+				importcss_append: true,
+				height: 400,
+				file_picker_callback: function (callback, value, meta) {
+					/* Provide file and text for the link dialog */
+					if (meta.filetype === 'file') {
+					callback('https://www.google.com/logos/google.jpg', { text: 'My text' });
+					}
+
+					/* Provide image and alt text for the image dialog */
+					if (meta.filetype === 'image') {
+					callback('https://www.google.com/logos/google.jpg', { alt: 'My alt text' });
+					}
+
+					/* Provide alternative source and posted for the media dialog */
+					if (meta.filetype === 'media') {
+					callback('movie.mp4', { source2: 'alt.ogg', poster: 'https://www.google.com/logos/google.jpg' });
+					}
+				},
+				templates: [
+				],
+				template_cdate_format: '[Date Created (CDATE): %m/%d/%Y : %H:%M:%S]',
+				template_mdate_format: '[Date Modified (MDATE): %m/%d/%Y : %H:%M:%S]',
+				height: 600,
+				image_caption: true,
+				quickbars_selection_toolbar: 'bold italic | quicklink h2 h3 blockquote quickimage quicktable',
+				noneditable_noneditable_class: "mceNonEditable",
+				toolbar_drawer: 'sliding',
+                contextmenu: "link image imagetools table",
+                skin: 'bootstrap',
+                mode : "textareas",
+                //language : "es",
+                });
+                
+    // Remove de alert from tiny editor
+    new MutationObserver((mutationsList, observer)=>{
+        for(let mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                for (const node of mutation.addedNodes) {
+                    if(node.className  == "tox-notifications-container"){
+                        observer.disconnect();
+                        let a = document.querySelector(".tox-button--icon");
+						if(a)
+							a.click();
+                    }
+                }
+            }
+        }
+    }).observe(document, { attributes: false, childList: true, subtree: true });
+
+
+		/*descriptionEditor.addEventListener('keyup', ()=>{
+             analyzeText(descriptionEditor);
+		});*/
+
+    function elementControl(node) {
+
+        switch (node.tagName) {
+            case "IMG":
+                changeImageAttributes(node);
+                break;
+            case "H1":
+                var p = document.createElement('p');
+                p.innerHTML = node.innerHTML;
+                node.parentNode.replaceChild(p, node);
+                break;
+            case "H2":
+            case "H3":
+            case "H4":
+            case "H5":
+            case "H6":
+                generateMenuNavigation();
+                break;
+            case "A":
+                propeLinks(node);
+                break;
+            default:
+                break;
+        }
+    }
+	
+
+	function changeImageAttributes(node) {
+		if(newImg != null && node.tagName === "IMG" && node.src.indexOf(newImg.ramdomId)>-1){    
+						/*node.setAttribute("src", newImg["image"].srcToOriginalImage);
+                        node.setAttribute("srcset", newImg.srcset);*/
+                        console.log(newImg["picture"]);
+                        
+                        node.insertAdjacentHTML("beforebegin", newImg["picture"]);
+                        node.parentNode.removeChild(node);
+						newImg = null;
+                    }
+	}
+	
+	var nodeSelected;
+
+	/*function testDomain(domain){
+		let domainRegex = /(?<domain>[a-zA-z](?:[a-zA-Z0-9]|(?:(?:[\.\-_])\w)){1,252}\.(?<tdl>[a-zA-Z]{2,6})\.?)/gmi;
+		return domainRegex.test(domain);
+	}*/
+	function propeLinks(node) {
+
+        if(node.tagName === "A"){
+            if(node.parentNode.textContent[0] != "{"){
+                if(afiliatesSites.has(node.host)){
+                    node.setAttribute("rel","sponsored"); 
+                    node.setAttribute("target","_blank");
+                    node.setAttribute("title",afiliatesSites.get(node.host).title);
+                    nodeSelected = node;
+                    node.setAttribute("href",afiliatesSites.get(node.host).href(afiliatesSites.get(node.host), node.href, true));
+                    /*console.log(node.text);
+                       if(!node.text || testDomain(node.text))
+                        node.text = afiliatesSites.get(node.host).title;*/
+                }else if(node.host == "res.cloudinary.com"){
+					node.insertAdjacentHTML("afterend", generatePicture(node.getAttribute("href")));
+					node.parentNode.removeChild(node);
+				}
+            }else{
+                var aux = document.createElement('div');
+                aux.appendChild(node.cloneNode(true));
+                node.parentNode.innerHTML = node.parentNode.innerHTML.replace(aux.innerHTML, node.textContent);
+            }
+        }
+         
+		
+	}
+	/*
+	// Callback function to execute when mutations are observed
+	const observerCallback = function(mutationsList, observer) {
+        observer.disconnect();
+        
+		// Use traditional 'for loops' for IE 11
+		for(let mutation of mutationsList) {
+			if (mutation.type === 'childList') {
+				for(let node of mutation.addedNodes){
+					if(node.tagName === "IMG" || node.tagName === "A")
+                        elementControl(node);
+				}
+			}
+			else if (mutation.type === 'attributes') {
+				if(mutation.attributeName === "src"){
+					console.log('The ' + mutation.attributeName + ' attribute was modified.');
+					changeImageAttributes(mutation.target);
+				}else if(mutation.attributeName === "href"){
+                    // To break the recursivity
+					if(mutation.target !== nodeSelected){
+						propeLinks(mutation.target);
+					}else{
+						nodeSelected = null;
+					}
+					
+				}
+				
+			}
+		}
+		observer.observe(descriptionEditor, config);
+	};
+
+	// Create an observer instance linked to the callback function
+	const observer = new MutationObserver(observerCallback);
+    // Options for the observer (which mutations to observe)
+    const config = { attributes: true, childList: true, subtree: true };
+	observer.observe(descriptionEditor, config);
+    
+	// Start observing the target node for configured mutations
+	//observer.observe(targetNode, config);
+
+	// Later, you can stop observing
+    //observer.disconnect()
+    */
+
+</script>    </div>
+<footer class=" container card">
+    <section class="card-body" id="credits">
+        <h2>Credits: </h2>
+        <p>Make with love by <a href="https://github.com/pericodes">Pericodes</a></p>
+    </section>
+</footer>
+</body>
+</html>
